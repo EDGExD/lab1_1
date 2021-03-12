@@ -18,21 +18,15 @@ import javax.lang.model.SourceVersion;
 
 public class OfferItem {
 
-    // product
     private Product product;
-
-    //private BigDecimal productPrice;
+    
+    private Money totalCost;
+    
+    private Discount discount;
 
     private int quantity;
 
-    private Money totalCost;
-
-    //private String currency;
-
-    // discount
-    private String discountCause;
-
-    private BigDecimal discount;
+  
 
     public OfferItem(String productId, BigDecimal productPrice, String productName, Date productSnapshotDate,
             String productType, int quantity) {
@@ -44,21 +38,11 @@ public class OfferItem {
         this.product=new Product(productId,productName, productSnapshotDate, productType, new Money(null, productPrice));
 
         this.quantity = quantity;
-        this.discount = discount;
-        this.discountCause = discountCause;
+        this.discount = new Discount(new Money(null, discount), discountCause);
 
-        BigDecimal discountValue = new BigDecimal(0);
-        if (discount != null) {
-            discountValue = discountValue.subtract(discount);
-        }
-
-        this.totalCost = new Money(null,getProductPrice().multiply(new BigDecimal(quantity)).subtract(discountValue));
+        this.totalCost = new Money(null,getProductPrice().multiply(new BigDecimal(quantity)).subtract(this.discount.getDiscountValue()));
     }
     
-    /*public Product getProduct() {
-        return product;
-    }*/
-
     public String getProductId() {
         return product.getProductId();
     }
@@ -88,11 +72,15 @@ public class OfferItem {
     }
 
     public BigDecimal getDiscount() {
-        return discount;
+        return discount.getDiscountValue();
     }
 
     public String getDiscountCause() {
-        return discountCause;
+        return discount.getDiscountCause();
+    }
+    
+    public String getDiscountCurrency() {
+        return discount.getDiscountCurrency();
     }
 
     public int getQuantity() {
